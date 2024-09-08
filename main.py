@@ -47,7 +47,7 @@ x_train, y_train, x_test, y_test, scalers = prepare_data(data, FEATURE_COLUMNS, 
                                                          split_date=SPLIT_DATE, random_split=RANDOM_SPLIT)
 
 # Build, train, and test model
-model = build_model((x_train.shape[1], len(FEATURE_COLUMNS)))
+model = build_model((x_train.shape[1], len(FEATURE_COLUMNS)), num_layers=5, layer_type='LSTM', layer_size=100, dropout_rate=0.3)
 train_model(model, x_train, y_train)
 predicted_prices = model.predict(x_test)
 predicted_prices = scalers["Close"].inverse_transform(predicted_prices)
