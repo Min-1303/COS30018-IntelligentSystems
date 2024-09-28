@@ -67,3 +67,65 @@ def boxplot_chart(data, company, column='Close', n_days=1):
     
     # Add a grid to the chart for better readability
     plt.grid(True)
+
+
+def plot_multistep_prediction(actual, predicted, company, steps):
+    """
+    Plot multistep stock price predictions vs. actual prices.
+    
+    Args:
+        actual (array-like): The actual stock prices.
+        predicted (array-like): The predicted stock prices.
+        company (str): Company name or ticker symbol.
+        steps (int): The number of steps (days) predicted.
+    """
+    plt.figure(figsize=(10, 5))
+    plt.plot(actual[:steps], color="black", label=f"Actual {company} Price")
+    plt.plot(range(len(predicted)), predicted, color="green", label=f"Multistep Predicted {company} Price", linestyle='--')
+    plt.title(f"{company} Multistep Share Price Prediction", fontsize=16)
+    plt.xlabel("Steps into Future", fontsize=12)
+    plt.ylabel(f"{company} Share Price", fontsize=12)
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+
+def plot_multivariate_prediction(actual, predicted, company):
+    """
+    Plot multivariate stock price predictions vs. actual prices.
+    
+    Args:
+        actual (array-like): The actual stock prices.
+        predicted (array-like): The predicted stock prices.
+        company (str): Company name or ticker symbol.
+    """
+    plt.figure(figsize=(10, 5))
+    plt.plot(actual[:5], color="black", label=f"Actual {company} Price")
+    plt.plot(range(5), predicted, color="green", label=f"Multivariate Predicted {company} Price", linestyle='--')
+    plt.title(f"{company} Multivariate Share Price Prediction", fontsize=16)
+    plt.xlabel("Steps into Future", fontsize=12)
+    plt.ylabel(f"{company} Share Price", fontsize=12)
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+
+def plot_multivariate_multistep_prediction(actual, predicted, company, steps):
+    """
+    Plot multivariate multistep stock price predictions vs. actual prices.
+    
+    Args:
+        actual (array-like): The actual stock prices.
+        predicted (array-like): The predicted stock prices.
+        company (str): Company name or ticker symbol.
+        steps (int): The number of steps (days) predicted.
+    """
+    plt.figure(figsize=(10, 5))
+    plt.plot(actual[:steps], color="black", label=f"Actual {company} Price")
+    plt.plot(range(len(predicted)), predicted, color="green", label=f"Multivariate Multistep Predicted {company} Price", linestyle='--')
+    plt.title(f"{company} Multivariate Multistep Share Price Prediction", fontsize=16)
+    plt.xlabel("Steps into Future", fontsize=12)
+    plt.ylabel(f"{company} Share Price", fontsize=12)
+    plt.legend()
+    plt.grid(True)
+    plt.show()
