@@ -1,13 +1,14 @@
-
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, LSTM, GRU, SimpleRNN, Bidirectional
 import numpy as np
 import pandas as pd
 
 def build_model(input_shape, num_layers=3, layer_type='LSTM', layer_size=50, dropout_rate=0.2):
+    """
+    Build a model based on specified type and configuration.
+    """
     model = Sequential()
-
-    #first RNN layer
+    # Add first layer based on model type
     if layer_type == 'LSTM':
         model.add(LSTM(units=layer_size, return_sequences=(num_layers > 1), input_shape=input_shape))
     elif layer_type == 'GRU':
@@ -23,7 +24,7 @@ def build_model(input_shape, num_layers=3, layer_type='LSTM', layer_size=50, dro
 
     model.add(Dropout(dropout_rate))
 
-    #remaining RNN layers
+    # Additional layers
     for _ in range(1, num_layers):
         if layer_type == 'LSTM':
             model.add(LSTM(units=layer_size, return_sequences=(_ < num_layers - 1)))
@@ -35,24 +36,20 @@ def build_model(input_shape, num_layers=3, layer_type='LSTM', layer_size=50, dro
             model.add(Bidirectional(LSTM(units=layer_size, return_sequences=(_ < num_layers - 1))))
         elif layer_type == 'BiGRU':
             model.add(Bidirectional(GRU(units=layer_size, return_sequences=(_ < num_layers - 1))))
-
         model.add(Dropout(dropout_rate))
 
-    #Output layer
     model.add(Dense(units=1))
-
-    # Compile the model
     model.compile(optimizer='adam', loss='mean_squared_error')
-
     return model
-
 
 def train_model(model, x_train, y_train, epochs=25, batch_size=32):
     model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size)
     return model
 
-
 def test_model(model, data, scaler, prediction_days, price_value):
+    """
+    Test the model on scaled data, transform output back to original scale.
+    """
     total_dataset = pd.concat((data[price_value]), axis=0)
     model_inputs = total_dataset[len(total_dataset) - len(data) - prediction_days:].values
     model_inputs = model_inputs.reshape(-1, 1)

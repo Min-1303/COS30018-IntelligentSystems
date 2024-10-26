@@ -1,11 +1,11 @@
 import numpy as np
 
-def predict_next_day(model, model_inputs, scaler, prediction_days):
-    real_data = [model_inputs[len(model_inputs) - prediction_days:, 0]]
-    real_data = np.array(real_data)
-    real_data = np.reshape(real_data, (real_data.shape[0], real_data.shape[1], 1))
-
+def predict_next_day(model, last_sequence, scaler, prediction_days):
+    """
+    Predict the stock price for the next day based on the last sequence of data.
+    """
+    # Reshape the last sequence for prediction
+    real_data = last_sequence[-prediction_days:]
     prediction = model.predict(real_data)
-    prediction = scaler.inverse_transform(prediction)
 
-    return prediction
+    return scaler.inverse_transform(prediction)

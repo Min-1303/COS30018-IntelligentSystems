@@ -11,6 +11,7 @@ def predict_next_day(model, last_sequence, scaler, prediction_days):
     """
     real_data = last_sequence[-prediction_days:]
     prediction = model.predict(real_data)
+    
     return scaler.inverse_transform(prediction)
 
 def multistep_predict(model, last_sequence, scaler, steps):

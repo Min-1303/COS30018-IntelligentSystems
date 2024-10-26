@@ -11,6 +11,7 @@ from visualization import plot_candlestick_chart, plot_boxplot
 import matplotlib.pyplot as plt
 import warnings
 
+# Suppress warnings related to feature names
 warnings.filterwarnings("ignore", message="X does not have valid feature names")
 
 # COMPANY: The stock ticker symbol of the company to analyze.
@@ -55,16 +56,18 @@ x_train, y_train, x_test, y_test, scalers = prepare_data(data, FEATURE_COLUMNS, 
                                                          split_method=SPLIT_METHOD, split_ratio=SPLIT_RATIO,
                                                          split_date=SPLIT_DATE, random_split=RANDOM_SPLIT)
 
-# Build, train, and test model
+# Build, train, and test the model
 model = build_model((x_train.shape[1], len(FEATURE_COLUMNS)), num_layers=4, layer_type='GRU', layer_size=100, dropout_rate=0.3)
 train_model(model, x_train, y_train)
+
+# Make predictions on the test data and inverse transform the predicted prices
 predicted_prices = model.predict(x_test)
 predicted_prices = scalers["Close"].inverse_transform(predicted_prices)
 
 # Assuming y_test is not inverse transformed and predicted_prices is:
 y_test_unscaled = scalers["Close"].inverse_transform(y_test.reshape(-1, 1))
 
-# Plot results: line chart
+# Plot results: line chart showing actual vs. predicted prices
 plt.plot(y_test_unscaled, color="black", label=f"Actual {COMPANY} Price")
 plt.plot(predicted_prices, color="green", label=f"Predicted {COMPANY} Price")
 plt.title(f"{COMPANY} Share Price")
@@ -73,19 +76,19 @@ plt.ylabel(f"{COMPANY} Share Price")
 plt.legend()
 plt.show()
 
-# Visualization: candlestick chart
+# Visualization: candlestick chart showing recent price trends
 plot_candlestick_chart(data, company=COMPANY, n_days=30)
 
-# Visualization: multiple boxplot charts
+# Visualization: multiple boxplot charts displaying statistical information
 plot_boxplot(data, company=COMPANY, n_days=90)
 
-# Predict next day
+# Predict the stock price for the next day using the last sequence of test data
 last_sequence = x_test[-1].reshape(1, PREDICTION_DAYS, len(FEATURE_COLUMNS))
 prediction = predict_next_day(model, last_sequence, scalers["Close"], PREDICTION_DAYS)
 print(f"Prediction: {prediction}")
 
-# Multistep prediction
-steps = 5  # predicted days
+# Multistep predictions: predicting stock prices for multiple future steps
+steps = 5  # Number of future days to predict
 multistep_predictions = multistep_predict(model, last_sequence, scalers["Close"], steps)
 print(f"Multistep Predictions: {multistep_predictions}")
 plt.figure(figsize=(10, 6))
@@ -96,9 +99,9 @@ plt.xlabel("Steps into Future", fontsize=12)
 plt.ylabel(f"{COMPANY} Share Price", fontsize=12)
 plt.legend()
 plt.grid(True)
-plt.show()
+plt.show(block=False)
 
-# Multivariate prediction
+# Multivariate prediction: Using multiple features to predict prices for the next few days
 multivariate_prediction = []
 for i in range(5):  # Predict for 5 future days
     prediction = multivariate_predict(model, data, FEATURE_COLUMNS, scalers["all_features"], PREDICTION_DAYS)
@@ -112,9 +115,9 @@ plt.xlabel("Steps into Future", fontsize=12)
 plt.ylabel(f"{COMPANY} Share Price", fontsize=12)
 plt.legend()
 plt.grid(True)
-plt.show()
+plt.show(block=False)
 
-# Multivariate multistep prediction
+# Multivariate multistep prediction: Predict multiple future prices using multiple features
 multivariate_multistep_predictions = multivariate_multistep_predict(model, data, FEATURE_COLUMNS, scalers["all_features"], PREDICTION_DAYS, steps)
 print(f"Multivariate Multistep Predictions: {multivariate_multistep_predictions}")
 plt.figure(figsize=(10, 6))
@@ -126,5 +129,3 @@ plt.ylabel(f"{COMPANY} Share Price", fontsize=12)
 plt.legend()
 plt.grid(True)
 plt.show()
-
- 
